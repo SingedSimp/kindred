@@ -44,7 +44,22 @@ class Overlay:
     def update(self):
         self.ucount += 1
         if self.ucount % 10 == 0:
-            self.api.update()
+            try: 
+                self.api.update()
+            except:
+                self.canvas.destroy()
+                self.canvas.update()
+                self.frame.destroy()
+                self.frame.update()
+                raise requests.exceptions.ConnectionError("API Failed to connect")
+            try:
+                alevel = self.api.data["activePlayer"]["abilities"]["Q"]["abilityLevel"]
+            except:
+                self.canvas.destroy()
+                self.canvas.update()
+                self.frame.destroy()
+                self.frame.update()
+                raise requests.exceptions.ConnectionError("API Failed to connect")
         image = "highlight_level.png"
         alevel = self.api.data["activePlayer"]["abilities"]["Q"]["abilityLevel"]
         alevel += self.api.data["activePlayer"]["abilities"]["W"]["abilityLevel"]
@@ -76,6 +91,8 @@ class Overlay:
         self.canvas.pack()
         self.update()
         self.frame.mainloop()
+        print("heheheha")
+        return "Done"
 
 class InGameData:
     def __init__(self):
@@ -98,7 +115,6 @@ class Window:
         self.text = tk.Text(
                 self.canvas,
         )
-        self.text.pack()
         self.image = ImageTk.PhotoImage(file=self.icon)
     def makeoverlay(self):
         txt = ""
@@ -114,15 +130,14 @@ class Window:
             txt = "Success! Wolf is out for a hunt!\n"
         except:
             txt = "Wolf got lost on the way there. Are you sure you are in game?\n"
-
         self.text.insert(tk.INSERT, txt)
         if "success" in txt.lower():
             try:
                 overlay.render()
             except:
-                txt = "Wolf has returned from the hunt\n"
-            finally:
-                self.text.insert(tk.INSERT, txt)
+                pass
+        
+                
     def widget(self):
         start = tk.Button(
             self.canvas,
@@ -135,6 +150,8 @@ class Window:
         self.frame.after(100, self.update)
     def render(self):
         self.widget()
+        self.text.pack()
+        self.text.insert(tk.INSERT, "Output goes here...\n")
         self.canvas.pack()
         self.update()
         self.frame.mainloop()

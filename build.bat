@@ -1,0 +1,1 @@
+pyinstaller --add-data="highlight_level.png;." --add-data="kindred250x250.png;." --add-data="kindred250x250.ico;." --onedir --noconsole --icon=kindredicon.ico loloverlay.py 
